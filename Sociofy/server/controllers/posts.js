@@ -50,13 +50,13 @@ export const getUserPosts = async (req, res) => {
 export const getCommunityPosts = async (req, res) => {
   try {
     const { communityName } = req.params;
-    const post = await Post.find  
-    ({ communityName });
+    const post = await Post.find
+      ({ communityName });
     res.status(200).json(post);
   }
   catch (err) {
     res.status(404).json({ message: err.message });
-  } 
+  }
 }
 
 /* UPDATE */
@@ -85,7 +85,7 @@ export const likePost = async (req, res) => {
   }
 };
 
-export const patchComment  = async ( req, res) => {
+export const patchComment = async (req, res) => {
   try {
     const { id } = req.params; //post id
     const { userId, text, name, picturePath } = req.body;
@@ -104,3 +104,14 @@ export const patchComment  = async ( req, res) => {
     res.status(404).json({ message: err.message });
   }
 }
+
+//getComments
+export const getComments = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+    res.status(200).json(post.comments);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
