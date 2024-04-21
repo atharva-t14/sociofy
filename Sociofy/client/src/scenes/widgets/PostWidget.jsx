@@ -86,8 +86,27 @@ const PostWidget = ({
       }
     );
     const updatedPost = await response.json();
+    // updateScore();
     dispatch(setPost({ post: updatedPost }));
   };
+
+  // const updateScore = async () => {
+  //   const response = await fetch(
+  //     `http://localhost:3001/posts/${postId}/update-score`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ userId: loggedInUserId }),
+  //     }
+  //   );
+  //   const updatedPost = await response.json();
+  //   dispatch(setPost({ post: updatedPost }));
+  // }
+
+
 
   return (
     <WidgetWrapper m="2rem 0">

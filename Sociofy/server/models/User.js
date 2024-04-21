@@ -33,10 +33,15 @@ const UserSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    comments: {
+      type: Array,
+      default: [],
+    },
     location: String,
     occupation: String,
     viewedProfile: Number,
     impressions: Number,
+    score: Number,
   },
   { timestamps: true }
 );

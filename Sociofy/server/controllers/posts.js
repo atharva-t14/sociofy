@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import { updateScore } from "./scores.js";
 
 /* CREATE */
 export const createPost = async (req, res) => {
@@ -90,14 +91,22 @@ export const patchComment  = async ( req, res) => {
     const { id } = req.params; //post id
     const { userId, text, name, picturePath } = req.body;
     const post = await Post.findById(id);
-    const newComment = { userId, text, name, picturePath };
-    post.comments.push(newComment);
+    const newPostComment = { userId, text, name, picturePath };
+    post.comments.push(newPostComment);
+    
 
     const updatedPost = await Post.findByIdAndUpdate(
       id,
       { comments: post.comments },
       { new: true }
     );
+
+    const user = await User.findById(userId);
+    const newUserComment = { postId: id, text};
+    user.comments.push(newUserComment);
+    await user.save();
+
+    updateScore(req, res);
 
     res.status(200).json(updatedPost);
   } catch (err) {
