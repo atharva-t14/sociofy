@@ -1,5 +1,27 @@
 import mongoose from "mongoose";
 
+
+const commentSchema = new mongoose.Schema({
+  postId: {
+    type: String,
+    ref: 'Post',
+    required: true,
+  },
+  userId: {
+    type: String,
+    ref: 'User',
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  flags: {
+    type: [String],
+    default: [],
+  },
+});
+
 const UserSchema = new mongoose.Schema(
   {
     firstName: {
@@ -34,14 +56,14 @@ const UserSchema = new mongoose.Schema(
       default: [],
     },
     comments: {
-      type: Array,
+      type: [commentSchema], // Array of comments with postId, text, and flags
       default: [],
     },
     location: String,
     occupation: String,
     viewedProfile: Number,
     impressions: Number,
-    score: Number,
+    score: { type: Number, default: 95 },
   },
   { timestamps: true }
 );

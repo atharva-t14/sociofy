@@ -30,6 +30,7 @@ export const register = async (req, res) => {
       occupation,
       viewedProfile: Math.floor(Math.random() * 10000),
       impressions: Math.floor(Math.random() * 10000),
+      score: 95
     });
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
@@ -41,8 +42,8 @@ export const register = async (req, res) => {
 /* LOGGING IN */
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    const { username, password } = req.body;
+    const user = await User.findOne({ username: username });
     if (!user) return res.status(400).json({ msg: "User does not exist. " });
 
     const isMatch = await bcrypt.compare(password, user.password);

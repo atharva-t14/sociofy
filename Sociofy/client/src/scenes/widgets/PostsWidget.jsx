@@ -49,6 +49,8 @@ const PostsWidget = ({ userId, isProfile = false }) => {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // console.log(posts[0]._id)
+
   return (
     <>
       {posts.length > 0 && ( // Check if there are posts before mapping
@@ -66,6 +68,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
               userPicturePath,
               likes,
               comments,
+              userScore,
             }) => (
               <PostWidget
                 key={_id}
@@ -79,6 +82,7 @@ const PostsWidget = ({ userId, isProfile = false }) => {
                 userPicturePath={userPicturePath}
                 likes={likes}
                 comments={comments}
+                score={userScore}
               />
             )
           )}

@@ -36,6 +36,7 @@ const PostWidget = ({
   userPicturePath,
   likes,
   comments,
+  score,
 }) => {
   const [isComments, setIsComments] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -65,10 +66,79 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  // comments.map((comment) => {
+  //   console.log(comment.flags);
+  // });
+
+  // const patchComment = async () => {
+  //   // {
+  //     // console.log(commentText);
+  //   // }
+  //   const response = await fetch(
+  //     `http://localhost:3001/posts/${postId}/comment`,
+  //     {
+  //       method: "PATCH",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         userId: loggedInUserId,
+  //         text: commentText,
+  //         name: user.firstName + user.lastName,
+  //         picturePath: user.picturePath,
+  //         userId: loggedInUserId
+  //       }),
+  //     }
+  //   );
+  //   const updatedPost = await response.json();
+  //   console.log("updatedPost",updatedPost);
+  //   // updateScore();
+  //   dispatch(setPost({ post: updatedPost }));
+  //   updateScore();
+  // };
+
+  // const updateScore = async () => {
+  //   const response = await fetch(
+  //     `http://localhost:3001/scores/${loggedInUserId}`,
+  //     {
+  //       method: "PATCH",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //         "Content-Type": "application/json",
+  //       },
+
+  //       body: JSON.stringify(
+  //         {
+  //           text: commentText,
+  //           postId: postId,
+  //         }
+  //       ),
+  //     }
+  //   );
+  //   const updatedUser = await response.json();
+  // }
+
+  const updateScore = async (lastCommentId) => {
+    const response = await fetch(
+      `http://localhost:3001/scores/${loggedInUserId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: commentText,
+          postId: postId,
+          lastCommentId: lastCommentId, // Include the last comment ID in the body
+        }),
+      }
+    );
+    const updatedUser = await response.json();
+  };
+
   const patchComment = async () => {
-    {
-      console.log(commentText);
-    }
     const response = await fetch(
       `http://localhost:3001/posts/${postId}/comment`,
       {
@@ -81,32 +151,16 @@ const PostWidget = ({
           userId: loggedInUserId,
           text: commentText,
           name: user.firstName + user.lastName,
-          picturePath: user.picturePath, userId: loggedInUserId
+          picturePath: user.picturePath,
+          userId: loggedInUserId,
         }),
       }
     );
     const updatedPost = await response.json();
-    // updateScore();
     dispatch(setPost({ post: updatedPost }));
+    console.log("updatedPost", updatedPost);
+    updateScore(updatedPost.comments[updatedPost.comments.length - 1]._id); // Pass the ID of the last comment
   };
-
-  // const updateScore = async () => {
-  //   const response = await fetch(
-  //     `http://localhost:3001/posts/${postId}/update-score`,
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ userId: loggedInUserId }),
-  //     }
-  //   );
-  //   const updatedPost = await response.json();
-  //   dispatch(setPost({ post: updatedPost }));
-  // }
-
-
 
   return (
     <WidgetWrapper m="2rem 0">
@@ -115,6 +169,7 @@ const PostWidget = ({
         name={name}
         subtitle={location}
         userPicturePath={userPicturePath}
+        score={score}
       />
       <Typography
         component="span" // Use 'span' to render as an inline element
@@ -160,7 +215,7 @@ const PostWidget = ({
 
           <FlexBetween gap="0.3rem">
             <IconButton onClick={() => setIsComments(!isComments)}>
-            {isComments ? (
+              {isComments ? (
                 <ChatBubbleOutlined sx={{ color: primary }} />
               ) : (
                 <ChatBubbleOutline />
@@ -191,9 +246,9 @@ const PostWidget = ({
 
             <IconButton
               onClick={() => {
-                {
-                  console.log(commentText);
-                }
+                // {
+                //   console.log(commentText);
+                // }
                 patchComment();
                 setCommentText("");
               }}
@@ -203,48 +258,47 @@ const PostWidget = ({
           </Box>
 
           <Box mt="0.5rem">
-            {comments.map((comment, i) => (
-              <Box key={`${name}-${i}`}>
-                <Divider />
-
-                
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      "&:hover": {
-                        cursor: "pointer",
-                        backgroundColor: "#f0f0f0",
-                      },
-                    }}
-                    onClick={() => {
-            navigate(`/profile/${comment.userId}`);
-            navigate(0);
-          }}
-                  >
-                    <UserImage image={comment.picturePath} size={30}/>
-                    <Typography
-                      key={i}
-                      sx={{ color: main, m: "0.5rem 0", pl: "1rem"}}
-                    >
-                      {comment.name}
-                    </Typography>
-                  </Box>
-                
-
-                <Box>
-                  <Typography
-                    key={i}
-                    sx={{ color: main, m: "1rem 0", pl: "1rem" }}
-                  >
-                    {comment.text}
-                  </Typography>
-                </Box>
-              </Box>
-            ))}
-            <Divider />
+  {comments.map((comment, i) => (
+    <Box key={`${name}-${i}`}>
+      <Divider />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          "&:hover": {
+            cursor: "pointer",
+            backgroundColor: "#f0f0f0",
+          },
+        }}
+        onClick={() => {
+          navigate(`/profile/${comment.userId}`);
+          navigate(0);
+        }}
+      >
+        <UserImage image={comment.picturePath} size={30} />
+        <Typography key={i} sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+          {comment.name}
+        </Typography>
+      </Box>
+      <Box>
+        <Typography key={i} sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>
+          {comment.text}
+        </Typography>
+        {/* Display flags */}
+        {comment.flags && comment.flags.length > 0 && (
+          <Box sx={{ pl: "1rem" }}>
+            Flags: {comment.flags.join(", ")}
           </Box>
+        )}
+      </Box>
+    </Box>
+  ))}
+  <Divider />
+</Box>
+
+
+
         </>
       )}
     </WidgetWrapper>
